@@ -1,22 +1,26 @@
-const express = require("express");
-const logger = require('./logger')
+const express = require('express')
+const app = express()
+let { people } = require('./data')
 
-const app = express();
+// static assets
+app.use(express.static('./methods-public'))
 
-app.use('/api', logger)
+// parse form data
+app.use(express.urlencoded({ extended: false }))
 
-app.get("/", (req, res) => {
-  res.send("Home");
-});
+app.get('/api/people', (req, res) => {
+  res.status(200).json({ success: true, data: people })
+})
 
-app.get("/about", (req, res) => {
-  res.send("About");
-});
-
-app.get("/api/products", (req, res) => {
-  res.send("Products");
-});
+app.post('/login', (req, res) => {
+  console.log(req.body)
+  const { name } = req.body
+  if (name) {
+    return res.status(200).send(`Welcome ${name}`)
+  }
+  res.status(401).send('Please provide credentials')
+})
 
 app.listen(8080, () => {
-  console.log("Listening on port 8080...");
-});
+  console.log('Listening on port 8080...')
+})
